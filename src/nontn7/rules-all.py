@@ -2,12 +2,12 @@
 basic possible rules. This should then be used to create a smaller dataset
 that is more efficient to work with. """
 
-import csv
+
 import sys
 from operon_analyzer import analyze, rules
-from tools.filters import standard_fs as fs
+from tools.filters import fs
 
-csv.field_size_limit(sys.maxsize)
+
 
 
 rs = rules.RuleSet().require('CRISPR array') \

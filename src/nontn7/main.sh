@@ -5,10 +5,10 @@
 set -euo pipefail
 
 # Directories for input and output
-DATA=data
-RESULTS=$HOME/work
-BLASTN_DB="/stor/work/Wilke/rybarskj/trnadb/trnas.fa"
-BLASTP_DB="/stor/work/Wilke/rybarskj/uniprotdb/uniprot_combined.fasta"
+DATA=../../data/nontn7
+STORE=$HOME/work
+BLASTN_DB="$STORE/trnadb/trnas.fa"
+BLASTP_DB="$STORE/uniprotdb/uniprot_combined.fasta"
 REBLAST_OUTPUT_DIR="$DATA/reblast"
 
 # Make sure the output directory exists
@@ -18,7 +18,7 @@ mkdir -p $REBLAST_OUTPUT_DIR
 # Find operons that meet our minimal criteria
 minimal_file=$DATA/minimal_passing_operons.csv.gz
 if [[ ! -e $minimal_file ]]; then
-    fd '.*csv' $RESULTS/missing-effectors $RESULTS/pipeline-results | parallel -j2 'cat {}' | python fix-paths.py | python rules-all.py | python rules-nocas1-2.py | gzip > $minimal_file
+    fd '.*csv' $STORE/missing-effectors $STORE/pipeline-results | parallel -j2 'cat {}' | python fix-paths.py | python rules-all.py | python rules-nocas1-2.py | gzip > $minimal_file
 else
     >&2 echo "Minimal file already exists. Skipping..."
 fi 
@@ -67,7 +67,7 @@ for group in "${!sizes[@]}"; do
     fi
 done | parallel --colsep ' ' "gzip -cd $minimal_file | python rules-{2}.py | python dedup.py | python size-select.py {2} {3} {4} | gzip > $DATA/{1}.csv.gz"
 
-# Select operons that may have nuclease-dead effectors
+# Find nuclease-dead Class 2 effectors
 for group in "${!proteins[@]}"; do
     fasta="$DATA/$group.effectors.fasta"
     alignment="$DATA/$group.effectors.afa"
@@ -89,11 +89,14 @@ for group in "${!proteins[@]}"; do
         python identify-catalytic-residues.py ${residues[$protein]} < $alignment > $residues_file 
     fi
 
+    # Gets operons with nuclease-dead effectors and save them to a new file
     if [[ ! -e $nuclease_dead_operons ]]; then
         gzip -cd $DATA/$group.csv.gz | python load-nuclease-dead.py $protein $residues_file | gzip > $nuclease_dead_operons
     fi
 done
 
+# Re-BLAST the nuclease-dead systems with Uniref, Swissprot and a tRNA database to see if we've correctly identified the Cas proteins and to understand the genetic context around them
+exit 0  # don't start reblasting for now while i'm working out issues above. I should really add something to decide whether re-BLASTing is complete or not
 for group in "${!proteins[@]}"; do
     echo $group
 done | parallel "gzip -cd $DATA/{}.nuclease_dead.csv.gz | python reblast.py $BLASTN_DB $BLASTP_DB $REBLAST_OUTPUT_DIR/{}"
