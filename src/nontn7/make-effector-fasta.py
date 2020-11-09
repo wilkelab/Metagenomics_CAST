@@ -3,6 +3,7 @@
 # proteins.
 
 from operon_analyzer import analyze
+from tools.filters import fs
 import sys
 
 protein_name = sys.argv[1]
@@ -14,6 +15,7 @@ with open(reference_protein_filename) as f:
 
 sequences = []
 for operon in analyze.load_operons(sys.stdin):
+    fs.evaluate(operon)
     for n, feature in enumerate(operon.get(protein_name)):
         sequences.append((operon.contig, operon.start, operon.end, feature.accession, feature.sequence, n))
 
