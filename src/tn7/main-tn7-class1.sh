@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# This script runs the entire non-Tn7 CRISPR-transposon pipeline.
+# This script runs the Tn7-class1 CRISPR-transposon pipeline.
 
 # Halt the pipeline if any errors are encountered
 set -euo pipefail
