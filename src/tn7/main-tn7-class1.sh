@@ -32,7 +32,7 @@ fi
 # Apply rules to select only good-quality Tn7-class1 loci
 class1_file=$RESULTS/class1_tn7_$data_partition.csv
 if [[ ! -e $class1_file ]]; then
-    cat $minimal_file | python3 rules-class1.py | python3 ../nontn7/dedup.py > $class1_file 
+    cat $minimal_file | python3 rules-tn7-class1.py | python3 ../nontn7/dedup.py > $class1_file 
 else
     >&2 echo "Class I operons already exist. Skipping..."
 fi
