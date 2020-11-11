@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Directories for input and output
-DATA=../../data/nontn7
+DATA=../../output/nontn7
 STORE=$HOME/work
 BLASTN_DB="$STORE/trnadb/trnas.fa"
 BLASTP_DB="$STORE/uniprotdb/uniprot_combined.fasta"
@@ -23,9 +23,8 @@ else
     >&2 echo "Minimal file already exists. Skipping..."
 fi 
 
-
 # ===== Class I systems =====
-class1_file=$DATA/class1.csv.gz
+class1_file=$DATA/class1.nuclease_dead.csv.gz
 if [[ ! -e $class1_file ]]; then
     gzip -cd $minimal_file | python rules-nocas3-10.py | python rules-class1.py | python dedup.py | gzip > $class1_file 
 else
@@ -94,6 +93,11 @@ for group in "${!proteins[@]}"; do
         gzip -cd $DATA/$group.csv.gz | python load-nuclease-dead.py $protein $residues_file | gzip > $nuclease_dead_operons
     fi
 done
+
+# Find self-targeting spacers and inverted repeats, both in Class 1 and Class 2 systems
+for group in class1 "${!proteins[@]}"; do
+    echo $group
+done | parallel "gzip -cd $DATA/{}.nuclease_dead.csv.gz | python self-targeting.py | python find-inverted-repeats.py | gzip > $DATA/{}.fully-analyzed.csv.gz"
 
 # Re-BLAST the nuclease-dead systems with Uniref, Swissprot and a tRNA database to see if we've correctly identified the Cas proteins and to understand the genetic context around them
 exit 0  # don't start reblasting for now while i'm working out issues above. I should really add something to decide whether re-BLASTing is complete or not
