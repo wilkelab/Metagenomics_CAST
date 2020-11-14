@@ -1,6 +1,7 @@
 # Non-Tn7 CRISPR-transposons
 
 `main.sh` Runs the entire pipeline.  
+Tests can be run with `python -m pytest` in this directory.
 
 `dedup.py` Deduplicates operons  
 `fix-paths.py` Updates paths to those on our local cluster  
