@@ -18,8 +18,9 @@ regex = nuclease_active_residue_regex[protein]
 nuclease_active = set()
 with open(residues_file) as f:
     for line in f:
-        motif, contig_accession, contig_start, contig_end, protein_accession, number = line.strip().split()
+        motif, operon_data = line.strip().split()
         if regex.match(motif):
+            contig_accession, contig_start, contig_end, _, _, _ = operon_data.split(',')
             nuclease_active.add((contig_accession, int(contig_start), int(contig_end)))
 
 # write the nuclease-dead operons to stdout
