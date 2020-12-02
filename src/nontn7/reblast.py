@@ -17,17 +17,27 @@ output_dir = sys.argv[5]
 input_file = sys.argv[6]
 
 with gzip.open(input_file, 'rt') as f:
-    operons = list(analyze.load_operons(f))
+    operons = sorted(analyze.load_operons(f), key=lambda operon: -len(operon))
 if len(operons) < min_cluster_size:
     # This cluster has too few members, so we assume it's abberant and not worth looking into. This assumption could be
     # wrong! It's probably worth revisiting when the larger clusters have finished reblasting
     exit(0)
 
-# pick some operons randomly to BLAST since this is very slow
-random.shuffle(operons)
+# Get the operon with the most features first
+operons_to_reblast = [operons[0]]
+
+# Get the operon with the most coverage, if it's not the same one
+longest_operon = sorted([operon for operon in operons], key=lambda o: -abs(o.end-o.start))[0]
+if longest_operon != operons_to_reblast[0]:
+    operons_to_reblast.append(longest_operon)
+
+remaining_operons = [op for op in operons if op not in operons_to_reblast]
+if remaining_operons and reblast_count > len(operons_to_reblast):
+    additional_operons = random.sample(remaining_operons, min(len(remaining_operons), reblast_count - len(operons_to_reblast)))
+    operons_to_reblast.extend(additional_operons)
 
 successful = 0
-for operon in operons:
+for operon in operons_to_reblast:
     assert os.path.exists(operon.contig_filename), f"missing file: {operon.contig_filename}"
 
     # set up the pipeline

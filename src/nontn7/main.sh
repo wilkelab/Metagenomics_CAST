@@ -192,7 +192,8 @@ fi
 
 exit 99
 
-for group in "${!proteins[@]}"; do
+#for group in "${!proteins[@]}"; do
+for group in cas9 class1; do
     filedir=$OUTPUT/$group.fully-analyzed
     for filename in $(ls $filedir); do
         cluster_directory=$(basename $filename)
