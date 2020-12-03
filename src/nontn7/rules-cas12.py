@@ -7,5 +7,5 @@ from tools.filters import fs
 
 
 
-rs = rules.RuleSet().require('cas12')
+rs = rules.RuleSet().require('cas12', regex=True)
 analyze.evaluate_rules_and_reserialize(sys.stdin, rs, fs)
