@@ -57,6 +57,10 @@ for operon in operons_to_reblast:
     # run the pipeline on this one contig
     try:
         job_id = f"{operon.contig}-{operon.start}-{operon.end}"
+        output_file = os.path.join(output_dir, f"{job_id}_results.csv")
+        if os.path.exists(output_file) or len(os.listdir(output_dir)) >= reblast_count:
+            continue
+        print(output_file, file=sys.stderr)
         results = p.run(data=operon.contig_filename, output_directory=output_dir, job_id=job_id, gzip=True)
     except subprocess.CalledProcessError:
         # pilercr segfaults for some unknown reason, in the event that this

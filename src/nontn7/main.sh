@@ -13,8 +13,8 @@ BLASTP_DB="$STORE/uniprotdb/uniprot_combined.fasta"
 REBLAST_OUTPUT_DIR="$OUTPUT/reblast"
 
 # Set a few parameters
-MIN_REBLAST_CLUSTER_SIZE=2
-REBLAST_COUNT=3
+MIN_REBLAST_CLUSTER_SIZE=1
+REBLAST_COUNT=1
 
 # Make sure the output directory exists
 mkdir -p $OUTPUT
@@ -23,7 +23,7 @@ mkdir -p $REBLAST_OUTPUT_DIR
 # Find operons that meet our minimal criteria
 minimal_file=$OUTPUT/minimal_passing_operons.csv.gz
 if [[ ! -e $minimal_file ]]; then
-    fd '.*csv' $STORE/missing-effectors $STORE/pipeline-results | parallel -j2 'cat {}' | python fix_paths.py | python rules-all.py | python rules-nocas1-2.py | gzip > $minimal_file
+    fd '.*csv' $STORE/missing-effectors $STORE/missing-effectors2 $STORE/pipeline-results | parallel -j2 'cat {}' | python fix_paths.py | python rules-all.py | python rules-nocas1-2.py | gzip > $minimal_file
 else
     >&2 echo "Minimal file already exists. Skipping..."
 fi 
@@ -189,11 +189,7 @@ else
     >&2 echo "Inverted repeats and self-targeting spacers already found for Class 1"
 fi
 
-
-exit 99
-
-#for group in "${!proteins[@]}"; do
-for group in cas9 class1; do
+for group in "${!proteins[@]}"; do
     filedir=$OUTPUT/$group.fully-analyzed
     for filename in $(ls $filedir); do
         cluster_directory=$(basename $filename)
@@ -205,8 +201,7 @@ for group in cas9 class1; do
         if [[ ! $(rg $filename $completed_file) ]]; then
             >&2 echo "Reblasting $group operons from $filename"
             # Perform the re-BLASTing. If we skip the file because it has too few clusters, we print nothing so that we can lower the minimum cluster size later. If we do print the filename it indicates that we BLASTed as many operons as we wanted.
-            # TODO: rename newreblast.py to reblast.py once Class 1 is done BLASTing
-            python newreblast.py $BLASTN_DB $BLASTP_DB $MIN_REBLAST_CLUSTER_SIZE $REBLAST_COUNT $directory $OUTPUT/$group.clusters/$filename >> $completed_file
+            python reblast.py $BLASTN_DB $BLASTP_DB $MIN_REBLAST_CLUSTER_SIZE $REBLAST_COUNT $directory $OUTPUT/$group.clusters/$filename >> $completed_file
         else
             >&2 echo "Already finished $group operons from $filename"
         fi
