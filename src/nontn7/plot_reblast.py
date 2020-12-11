@@ -18,6 +18,7 @@ reblasted_operons = tuple(analyze.load_operons(sys.stdin))
 # plotting operons, so we remove those.
 remove_os = re.compile(r"OS=.+")
 remove_parentheticals = re.compile(r"\(.+\)")
+cluster_regex = re.compile(r"cluster(\d+).csv.gz")
 
 for operon in reblasted_operons:
     for n, feature in enumerate(operon):
@@ -27,8 +28,10 @@ for operon in reblasted_operons:
 
 for original_operon_gz in os.listdir(original_operons_dir):
     print(original_operon_gz)
-    cluster_output_dir = os.path.join(output_dir, original_operon_gz)
-    os.makedirs(cluster_output_dir, exist_ok=True)
+    cluster_number = int(cluster_regex.match(original_operon_gz).group(1))
+
+    # cluster_output_dir = os.path.join(output_dir, original_operon_gz)
+    # os.makedirs(cluster_output_dir, exist_ok=True)
 
     with gzip.open(os.path.join(original_operons_dir, original_operon_gz), 'rt') as f:
         original_operons = tuple(analyze.load_operons(f))
@@ -37,7 +40,11 @@ for original_operon_gz in os.listdir(original_operons_dir):
 
         assert original_operons, "Invalid original operons file."
         try:
-            visualize.plot_operon_pairs(original_operons, reblasted_operons, cluster_output_dir, feature_colors=feature_colors)
-        except ValueError:
+            for operon, other in visualize.make_operon_pairs(original_operons, reblasted_operons):
+                filename = f"cluster{cluster_number:03d}-{operon.contig}-{operon.start}-{operon.end}.png"
+                out_filename = os.path.join(output_dir, filename)
+                visualize.plot_operon_pair(operon, other, None, None, out_filename, None, False, feature_colors)
+        except ValueError as e:
+            print(e)
             print(f"Couldn't plot {os.path.join(original_operons_dir, original_operon_gz)}")
             continue
