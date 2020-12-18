@@ -1,8 +1,11 @@
 This directory contains the following:
 
-`databases` Blast databases used for the intial metagenomic search for putative CRISPR-Transposons
+`databases/` Blast databases used for the intial metagenomic search for putative CRISPR-Transposons
+
 `cas*.fasta` Representative amino acid sequences for each cas protein type/subtype
+
 `transposase.fasta` Representative amino acid sequences for all available transposases, including the heteromeric Tn7 transposase proteins TnsA and TnsB
+
 `tn7-accessory.fasta` Representative amino acid sequences for Tn7 accessory proteins, i.e TnsC, TnsD/TniQ, and TnsE
 
 **Blast database construction**
@@ -34,7 +37,7 @@ Sequences for Cas proteins 1-11 were downloaded from UniRef50. For Cas12, Cas13,
 To ensure that the representative Cas protein sequences be as comprehensive as possible, we compiled (for each major Cas type, i.e 1-13) a list of contemporary and historic protein names to search for (summarized in the following tables). 
 
 Cas1-11:
-|Common Name|Alternate Name(s)/Query|Source|
+|Common Name|Alternate Name(s) / Query|Source|
 |---|---|---|
 |Cas1|cas1|UniRef50|
 |Cas2|cas2|UniRef50|
@@ -49,7 +52,7 @@ Cas1-11:
 |Cas11|cas11 OR csa5 OR cmr5 OR cse2 OR csm2|UniRef50|
 
 Cas12:
-|Subtype|Source|Alternate Name(s)/Query|DOI|
+|Subtype|Source|Alternate Name(s) / Query|DOI|
 |---|---|---|---|
 |Cas12 (all)|UniRef50|cas12||
 |Cas12a|UniRef50|cas12a OR cpf1||
@@ -69,7 +72,7 @@ Cas12:
 |Cas12V-U5|literature||https://doi.org/10.1038/nrmicro.2016.184|
 
 Cas13:
-|Common Name|Source|Alternate Name(s)/Query|
+|Common Name|Source|Alternate Name(s) / Query|
 |---|---|---|
 |Cas13|NCBI|cas13 OR cas13a OR cas13b OR cas13c OR cas13d|
 
