@@ -1,0 +1,32 @@
+# Example config file for running gene_finder on some genomic data
+---
+  out-dir: "gene_finder_result2"
+  min-prot-len: 80 # ORF aa cutoff length
+  span: 20000 # length (bp) upstream & downstream of bait hits to keep
+  outfrmt: "CSV" # output file format (can be either "CSV" or "JSON") 
+  gzip: False # make this True if the input contig file is gzipped
+  steps:
+    - step:
+      type: "seed"
+      name: "tns"
+      e-val: 0.001
+      blast-type: "PROT"
+      blast-db: "/stor/work/Wilke/blastDB/classifer/tns"
+    - step:
+      type: "blast"
+      name: "cas"
+      e-val: 0.005
+      blast-type: "PROT"
+      blast-db: "/stor/work/Wilke/blastDB/classifer/cas"
+    - step:
+      type: "blast"
+      name: "att"
+      e-val: 0.0001
+      blast-type: "PROT"
+      blast-db: "/stor/work/Wilke/blastDB/classifer/att"
+    - step:
+      type: "crispr"
+      name: null
+      e-val: null
+      blast-type: null
+      blast-db: null
