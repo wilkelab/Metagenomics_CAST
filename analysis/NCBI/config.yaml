@@ -1,6 +1,6 @@
 # Example config file for running gene_finder on some genomic data
 ---
-  out-dir: "gene_finder_result2"
+  out-dir: "gene_finder_result"
   min-prot-len: 80 # ORF aa cutoff length
   span: 20000 # length (bp) upstream & downstream of bait hits to keep
   outfrmt: "CSV" # output file format (can be either "CSV" or "JSON") 

@@ -40,29 +40,21 @@ def GF(name):
     #outfile = os.path.join(conf["out-dir"], "{}_results.csv".format(job_id))
 
     p = Pipeline()
-    for step in conf["steps"]:
-        
-        if step["type"] == "seed":
-            p.add_seed_step(db=step["blast-db"], name=step["name"], e_val=step["e-val"], blast_type=step["blast-type"])
-        
-        elif step["type"] == "filter":
-            p.add_filter_step(db=step["blast-db"], name=step["name"], e_val=step["e-val"], blast_type=step["blast-type"])
-        
-        elif step["type"] == "blast":
-            p.add_blast_step(db=step["blast-db"], name=step["name"], e_val=step["e-val"], blast_type=step["blast-type"])
-        
-        else:
-            p.add_crispr_step()
-    
+
+    p.add_seed_step(db="/stor/work/Wilke/blastDB/classifer/tns", name='tns', e_val=0.001, blast_type="PROT")
+
+    p.add_blast_step(db="/stor/work/Wilke/blastDB/classifer/cas", name='cas', e_val=0.005, blast_type="PROT")
+    p.add_crispr_step()
+    p.add_blastn_step('/stor/home/kh36969/p_database/ffs/ffs', name='ffs', e_val = 0.01, parse_descriptions=False)
     p.run(data=genomic_data, job_id=job_id, output_directory=conf["out-dir"], min_prot_len=conf["min-prot-len"],
-          span=conf["span"], gzip=conf["gzip"])
+          span=conf["span"], gzip=conf["gzip"])    
 
 
 import pandas as pd
 from multiprocessing import Pool
 if __name__ == '__main__':
 
-    all_fasta_files = get_all_file_paths('./manualfasta')
+    all_fasta_files = get_all_file_paths('./fasta')
     print(len(all_fasta_files))
 
     #p = Pool(50)
