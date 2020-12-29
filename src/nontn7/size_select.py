@@ -2,7 +2,9 @@
 
 
 import sys
+
 from operon_analyzer import analyze, rules
+
 from tools.filters import fs
 
 feature_name = sys.argv[1]

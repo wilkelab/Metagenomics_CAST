@@ -1,8 +1,11 @@
+""" Scans the entire contig where each putative operon is located and searches for inverted repeats """
+
+
 import sys
 
 from operon_analyzer import analyze, repeat_finder
-from tools.filters import fs
 
+from tools.filters import fs
 
 for operon in analyze.load_operons(sys.stdin):
     fs.evaluate(operon)

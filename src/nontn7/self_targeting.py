@@ -1,10 +1,10 @@
-""" Searches for self-targeting spacers in operons, add them as Feature objects, and rewrite all operons back to stdout regardless of what is found.
-"""
+""" Searches for self-targeting spacers in operons, add them as Feature objects, and rewrite all operons back to stdout regardless of what is found. """
 
-from operon_analyzer import analyze, spacers
-from tools.filters import fs
 import sys
 
+from operon_analyzer import analyze, spacers
+
+from tools.filters import fs
 
 operons = analyze.load_operons(sys.stdin)
 filtered_operons = []

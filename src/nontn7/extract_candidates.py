@@ -1,11 +1,11 @@
-# Takes a list of candidate systems that was produced during
-# the manual validation, finds the gene_finder output for those systems,
-# and prints their serialized data to stdout
+""" Takes a list of candidate systems that was produced during
+the manual validation, finds the gene_finder output for those systems,
+and prints their serialized data to stdout """
 
 
 import sys
-from operon_analyzer import load
 
+from operon_analyzer import load
 
 candidate_list = sys.argv[1]
 

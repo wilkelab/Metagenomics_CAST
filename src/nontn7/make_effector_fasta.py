@@ -1,10 +1,11 @@
-# Prints FASTA-formatted text containing the sequences of the given protein, from the operons passed into stdin.
-# If there is more than one protein of the same name in the same operon, we pick the one with the lowest evalue.
+""" Prints FASTA-formatted text containing the sequences of the given protein, from the operons passed into stdin.
+If there is more than one protein of the same name in the same operon, we pick the one with the lowest evalue. """
 
 import sys
 from typing import Optional
 
-from operon_analyzer import load, genes
+from operon_analyzer import genes, load
+
 from tools.filters import fs
 
 

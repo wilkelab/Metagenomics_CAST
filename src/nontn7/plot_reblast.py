@@ -1,3 +1,5 @@
+""" Makes operon diagrams with annotations from our curated database on top and TrEMBL/Swissprot/tRNA databases on bottom. """
+
 import gzip
 import os
 import re

@@ -186,7 +186,7 @@ for group in "${!proteins[@]}"; do
     mkdir -p $ndcluster_dir
     nuclease_dead_operons="$OUTPUT/$group.nuclease_dead.csv.gz"
     cluster_gzip_dir=$OUTPUT/$group.clusters
-    for nuclease_dead_cluster_filename in $(python count_nuclease_dead_in_cluster.py $nuclease_dead_operons $cluster_gzip_dir); do
+    for nuclease_dead_cluster_filename in $(python find_nuclease_dead_clusters.py $nuclease_dead_operons $cluster_gzip_dir); do
         cp $cluster_gzip_dir/$nuclease_dead_cluster_filename $ndcluster_dir
     done
 done

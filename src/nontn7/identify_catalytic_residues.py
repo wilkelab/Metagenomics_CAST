@@ -4,8 +4,9 @@ determine which proteins might be nuclease-dead.
 
 """
 
-from Bio import SeqIO
 import sys
+
+from Bio import SeqIO
 
 # space-separated catalytic residues with their (1-based) index.
 # For example, AsCas12a would be: D908 E993

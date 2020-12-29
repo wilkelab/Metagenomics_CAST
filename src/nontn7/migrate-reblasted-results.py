@@ -1,9 +1,10 @@
-# This is a "one-time use" script that moves re-BLAST results into the correct directories. The cluster IDs are
-# randomized with each run so if I re-run my analysis, I need to migrate them to the new directory where they belong.
-# Re-BLASTing takes an extremely long time relative to everything else so this is unavoidable.
+""" This is a "one-time use" script that moves re-BLAST results into the correct directories. The cluster IDs are
+randomized with each run so if I re-run my analysis, I need to migrate them to the new directory where they belong.
+Re-BLASTing takes an extremely long time relative to everything else so this is unavoidable. """
 
-import sys
 import os
+import sys
+
 from operon_analyzer import load
 
 # Where the gzipped CSV files from the new analysis:
