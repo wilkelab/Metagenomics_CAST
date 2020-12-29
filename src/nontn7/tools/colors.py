@@ -14,6 +14,7 @@ gray = (0.2, 0.2, 0.2)
 feature_colors = {'transposase|transposition|transposon|integrase|integration|resolvase|recombinase|recombination|IS\d+|(T|t)np': blue,
                   'cas(1$|2|4)': green,
                   'cas(3|9|10|12|13)': red,
+                  'cpf1': red,
                   'cas6|case|csy4': red,
                   'cas5|casd|csc1|csy2|csf3|csm4|csx10|cmr3': lightblue,
                   'cas7|casc|csd2|csc2|csy3|csf2|csm3|csm5|cmr1|cmr6|cmr4': purple,
