@@ -1,3 +1,7 @@
+""" Runs gene_finder with given protein and nucleotide databases. This is used to examine our results with TrEMBL, Swissprot and a tRNA database 
+to determine the context and accuracy of the annotations we made with our curated transposase and Cas databases. """
+
+
 import gzip
 import os
 import random

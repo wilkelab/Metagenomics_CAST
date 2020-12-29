@@ -1,8 +1,9 @@
-# Creates a gene_finder-formatted operon CSV, containing only operons with putatively dead nucleases.
+""" Creates a gene_finder-formatted operon CSV, containing only operons with putatively dead nucleases. """
 
-from operon_analyzer import analyze
 import re
 import sys
+
+from operon_analyzer import analyze
 
 protein = sys.argv[1]
 residues_file = sys.argv[2]

@@ -6,7 +6,7 @@
 
 import sys
 
-from operon_analyzer import load, genes, visualize
+from operon_analyzer import genes, load, visualize
 
 candidate_csv_gz = sys.argv[1]
 

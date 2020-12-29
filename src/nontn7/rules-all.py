@@ -4,11 +4,10 @@ that is more efficient to work with. """
 
 
 import sys
+
 from operon_analyzer import analyze, rules
+
 from tools.filters import fs
-
-
-
 
 rs = rules.RuleSet().require('CRISPR array') \
                     .require('transposase') \

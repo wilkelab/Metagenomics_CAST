@@ -1,4 +1,4 @@
-# Counts the number of operons that are passed into the script from stdin and prints the result to stdout
+""" Counts the number of operons that are passed into the script from stdin and prints the result to stdout """
 
 import sys
 

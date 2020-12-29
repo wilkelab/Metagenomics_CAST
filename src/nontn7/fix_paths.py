@@ -7,8 +7,8 @@ import csv
 import sys
 
 from operon_analyzer import parse
-from tools.diskio import fix_path
 
+from tools.diskio import fix_path
 
 if __name__ == '__main__':
     writer = csv.writer(sys.stdout, delimiter=',')

@@ -2,11 +2,10 @@
 
 
 import sys
+
 from operon_analyzer import analyze, rules
+
 from tools.filters import fs
-
-
-
 
 rs = rules.RuleSet().require('cas1').require('cas2')
 
