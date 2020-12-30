@@ -4,20 +4,19 @@ A pipeline for discovering non-Tn7 CRISPR transposons.
 
 ### Software Dependencies
 
-`Python 3.6+`  
-`Opfi` (https://github.com/alexismhill3/Opfi) and its dependencies  
-`GNU parallel verion: 20161222` [https://www.gnu.org/software/parallel/](https://www.gnu.org/software/parallel/)  
-`MAFFT v7.310 (2017/Mar/17)` [https://mafft.cbrc.jp/alignment/software/](https://mafft.cbrc.jp/alignment/software/)  
-`MMseqs2 version: 45c4de7f1daefa06b45688195305eadedaea4d97` [https://github.com/soedinglab/MMseqs2](https://github.com/soedinglab/MMseqs2)  
-`NCBI Blast 2.10+` [https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download)  
-`ripgrep` [https://github.com/BurntSushi/ripgrep](https://github.com/BurntSushi/ripgrep)  
-`fd` [https://github.com/sharkdp/fd](https://github.com/sharkdp/fd)  
+  - `Python 3.6+`  
+  - `Opfi` (https://github.com/alexismhill3/Opfi) and its dependencies  
+  - `GNU parallel verion: 20161222` [https://www.gnu.org/software/parallel/](https://www.gnu.org/software/parallel/)  
+  - `MAFFT v7.310 (2017/Mar/17)` [https://mafft.cbrc.jp/alignment/software/](https://mafft.cbrc.jp/alignment/software/)  
+  - `MMseqs2 version: 45c4de7f1daefa06b45688195305eadedaea4d97` [https://github.com/soedinglab/MMseqs2](https://github.com/soedinglab/MMseqs2)  
+  - `NCBI Blast 2.10+` [https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download)  
+  - `ripgrep` [https://github.com/BurntSushi/ripgrep](https://github.com/BurntSushi/ripgrep)  
+  - `fd` [https://github.com/sharkdp/fd](https://github.com/sharkdp/fd)  
 
 ### Data Dependencies
 
-Protein BLAST database: combine the TrEMBL and Swissprot databases ([https://www.uniprot.org/downloads](https://www.uniprot.org/downloads)) into a single protein database by concatenating their FASTA files and run `makeblastdb` (version 2.10.1+) with the default options.
-
-Nucleotide database: download the bacterial and archaeal tRNA sequences from ([http://lowelab.ucsc.edu/GtRNAdb/download.html](http://lowelab.ucsc.edu/GtRNAdb/download.html)) and run `makeblastdb` (version 2.10.1+) with the default options.
+  - Protein BLAST database: combine the TrEMBL and Swissprot databases ([https://www.uniprot.org/downloads](https://www.uniprot.org/downloads)) into a single protein database by concatenating their FASTA files and run `makeblastdb` (version 2.10.1+) with the default options.
+  - Nucleotide database: download the bacterial and archaeal tRNA sequences from ([http://lowelab.ucsc.edu/GtRNAdb/download.html](http://lowelab.ucsc.edu/GtRNAdb/download.html)) and run `makeblastdb` (version 2.10.1+) with the default options.
 
 ### Inputs and outputs
 
@@ -64,5 +63,5 @@ Tests can be run with `python -m pytest` in this directory.
 `size-select.py` Filters operons by the size of a given protein  
 `validate-plausible-candidates.py` Prints detailed information about a manually-curated list of putative operons  
 `tools/`  
-`  colors.py` Contains the color palette for operon diagrams  
-`  filters.py` Contains a universal filter  
+`  colors.py` Contains the color palette for operon diagrams  
+`  filters.py` Contains a universal filter  
