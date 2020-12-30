@@ -7,11 +7,14 @@ set -euo pipefail  # Halt the pipeline if any errors are encountered
 OUTPUT=../../output/nontn7
 DATA=../../data
 STORE=$HOME/work
+INPUT="$STORE/missing-effectors $STORE/missing-effectors2 $STORE/pipeline-results"
 BLASTN_DB="$STORE/trnadb/trnas.fa"
 BLASTP_DB="$STORE/uniprotdb/uniprot_combined.fasta"
 REBLAST_OUTPUT_DIR="$OUTPUT/reblast"
 MIN_REBLAST_CLUSTER_SIZE=1
 REBLAST_COUNT=3
+KEEP_PATHS="NO"  # change to "YES" if you're running this pipeline on some other system than the Wilke cluster. You may need to update the paths to the FASTA files in the gene_finder CSVs manually
+
 
 # TODO: This looks ridiculous because we removed the weird corner cases it allowed us to use.
 # It can be replaced by a simple list of strings probably.
@@ -49,7 +52,7 @@ mkdir -p $REBLAST_OUTPUT_DIR
 
 minimal_file=$OUTPUT/minimal_passing_operons.csv.gz
 if [[ ! -e $minimal_file ]]; then
-    fd '.*csv' $STORE/missing-effectors $STORE/missing-effectors2 $STORE/pipeline-results | parallel -j2 'cat {}' | python fix_paths.py | python rules-all.py | python rules-nocas1-2.py | gzip > $minimal_file
+    fd '.*csv' $INPUT | parallel -j2 'cat {}' | python fix_paths.py $KEEP_PATHS | python rules-all.py | python rules-nocas1-2.py | gzip > $minimal_file
 else
     >&2 echo "Minimal file already exists. Skipping..."
 fi 
