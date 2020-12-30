@@ -1,5 +1,4 @@
-# Takes the all_seqs results from mmseqs2 and a stream of Operons and
-# saves each to a separate gzipped CSV
+""" Takes the all_seqs results from mmseqs2 and a stream of Operons and saves each to a separate gzipped CSV """
 
 import gzip
 import os

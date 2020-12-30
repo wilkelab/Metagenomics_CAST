@@ -1,5 +1,5 @@
-# Determines whether every candidate system in a group of candidates is nuclease dead,
-# and if so, prints the filename of the gzipped CSV file to stdout
+""" Determines whether every candidate system in a group of candidates is nuclease dead,
+and if so, prints the filename of the gzipped CSV file to stdout """
 
 
 import os

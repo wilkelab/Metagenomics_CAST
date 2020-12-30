@@ -1,8 +1,8 @@
-# Filters out putative operons that are extremely similar to one another.
+""" Filters out putative operons that are extremely similar to one another. """
 
-from operon_analyzer import analyze
 import sys
 
+from operon_analyzer import analyze
 
 operons = analyze.load_operons(sys.stdin)
 unique = analyze.deduplicate_operons_approximate(operons)
