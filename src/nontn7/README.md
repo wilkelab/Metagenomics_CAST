@@ -15,15 +15,15 @@ A pipeline for discovering non-Tn7 CRISPR transposons.
 
 ### Data Dependencies
 
-  - Protein BLAST database: combine the TrEMBL and Swissprot databases ([https://www.uniprot.org/downloads](https://www.uniprot.org/downloads)) into a single protein database by concatenating their FASTA files and run `makeblastdb` (version 2.10.1+) with the default options.
-  - Nucleotide database: download the bacterial and archaeal tRNA sequences from ([http://lowelab.ucsc.edu/GtRNAdb/download.html](http://lowelab.ucsc.edu/GtRNAdb/download.html)) and run `makeblastdb` (version 2.10.1+) with the default options.
+  - **Protein BLAST database:** combine the TrEMBL and Swissprot databases ([https://www.uniprot.org/downloads](https://www.uniprot.org/downloads)) into a single protein database by concatenating their FASTA files and run `makeblastdb` (version 2.10.1+) with the default options.
+  - **Nucleotide database:** download the bacterial and archaeal tRNA sequences from ([http://lowelab.ucsc.edu/GtRNAdb/download.html](http://lowelab.ucsc.edu/GtRNAdb/download.html)) and run `makeblastdb` (version 2.10.1+) with the default options.
 
 ### Inputs and outputs
 
 Data directories are defined at the top of `main.sh`. The `$INPUT` and `$STORE` directories will need to be changed if you want to run the pipeline on your own system. `$INPUT` is the location of the `gene_finder` CSVs, and `$STORE` should be a filesystem with the capacity to store all the inputs. `$OUTPUT` and `$DATA` refer to directories within this repo.
 
 The pipeline requires a set of CSVs produced by `gene_finder` as its input. It will search through those putative operons and produce these outputs:
-  - `$crispr.fully-analyzed`: `gene_finder`-formatted CSVs of each candidate operon, containing details on all proteins and CRISPR arrays, self-targeting spacers and inverted repeats. $crispr here is one of: cas9, cas12, cas13 or class1.
+  - `$crispr.fully-analyzed`: `gene_finder`-formatted CSVs of each candidate operon, containing details on all proteins and CRISPR arrays, self-targeting spacers and inverted repeats. `$crispr` here is one of: `cas9`, `cas12`, `cas13 `or `class1`.
   - `reblast`: the pipeline will take the operons in the `fully-analyzed` directories and run them through `gene_finder` with the TrEMBL, Swissprot and tRNA databases. The results are stored in the `reblast` directory, separated by type.
   - `plots`: for each candidate operon, a diagram will be generated containing the gene annotations from the curated database (on top) and the TrEMBL/Swissprot/tRNA annotations (on bottom).
 
@@ -63,5 +63,5 @@ Tests can be run with `python -m pytest` in this directory.
 `size-select.py` Filters operons by the size of a given protein  
 `validate-plausible-candidates.py` Prints detailed information about a manually-curated list of putative operons  
 `tools/`  
-`  colors.py` Contains the color palette for operon diagrams  
-`  filters.py` Contains a universal filter  
+  `colors.py` Contains the color palette for operon diagrams  
+  `filters.py` Contains a universal filter  
