@@ -6,13 +6,7 @@ set -euo pipefail
 
 # Handle command line arguments
 data_partition=$1
-if [[ "$data_partition" == "ncbi" ]]; then
-    DATA="/stor/work/Wilke/crisprtn7/NCBI_gene_finder.csv"
-elif [[ "$data_partition" == "meta" ]]; then
-    DATA="/stor/work/Wilke/crisprtn7/typeI_Meta_gene_finder.csv"
-else
-    echo "Data partition doesn't exist. Exiting..." && exit
-fi
+DATA="/stor/work/Wilke/crisprtn7/typeI_Meta_gene_finder.csv"
 
 # Output directory
 #current_time=$(date "+%Y%m%d-%H")
