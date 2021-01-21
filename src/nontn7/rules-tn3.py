@@ -16,5 +16,5 @@ def _has_tn3(operon: genes.Operon) -> bool:
 
 tn3_rule = rules.Rule('composite', _has_tn3)
 
-rs = rules.RuleSet().require('cas9').custom(tn3_rule)
+rs = rules.RuleSet().custom(tn3_rule)
 analyze.evaluate_rules_and_reserialize(sys.stdin, rs, fs)
