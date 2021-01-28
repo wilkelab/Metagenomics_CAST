@@ -14,7 +14,7 @@ REBLAST_OUTPUT_DIR="$OUTPUT/reblast"
 ARRAYS_OPTIONAL_DIRECTORY=$OUTPUT/systems-with-or-without-crispr-arrays
 ARRAYS_REQUIRED_DIRECTORY=$OUTPUT/systems-with-crispr-arrays
 
-MIN_REBLAST_CLUSTER_SIZE=1
+MIN_REBLAST_CLUSTER_SIZE=2
 REBLAST_COUNT=3
 KEEP_PATHS="NO"  # change to "YES" if you're running this pipeline on some other system than the Wilke cluster. You will need to update the values for $STORE and $INPUT, and probably most of the hard-coded values listed above.
 
@@ -316,23 +316,33 @@ function find_self_targeting_spacers_and_inverted_repeats () {
 
 function reblast () {
     # Re-BLAST candidate systems with the TrEMBL, Swissprot, and tRNA databases
-
+    local input_directory=$1
     for group in "${!proteins[@]}"; do
-        filedir=$OUTPUT/$group.fully-analyzed
+        filedir=$input_directory/$group.fully-analyzed
         for filename in $(ls $filedir); do
-            cluster_directory=$(basename $filename)
-            directory="$REBLAST_OUTPUT_DIR/$group/$cluster_directory"
-            mkdir -p $directory
-            completed_file=$REBLAST_OUTPUT_DIR/$group/completed.txt
-            local action="Re-BLAST $group operons from $filename"
-            if [[ ! $(rg $filename $completed_file) ]]; then
-                echodo $action
-                # Perform the re-BLASTing. If we skip the file because it has too few clusters, we print nothing so that we can lower the minimum cluster size later. If we do print the filename it indicates that we BLASTed as many operons as we wanted.
-                # python reblast.py $BLASTN_DB $BLASTP_DB $MIN_REBLAST_CLUSTER_SIZE $REBLAST_COUNT $directory $OUTPUT/$group.clusters/$filename >> $completed_file
-            else
-                echodone $action
-            fi
+            # Perform the re-BLASTing. If we skip the file because it has too few clusters, we print nothing so that we can lower the minimum cluster size later. If we do print the filename it indicates that we BLASTed as many operons as we wanted.
+            # reblast.py needs to go through the operons in $filedir/$filename, determine the output filename for each, and check if they're present in $REBLAST_OUTPUT_DIR. If not, reblast. Either way, print out the decision. 
+            python reblast.py $BLASTN_DB $BLASTP_DB $MIN_REBLAST_CLUSTER_SIZE $REBLAST_COUNT $REBLAST_OUTPUT_DIR $filedir/$filename
         done
+    done
+}
+
+function plot_operons () {
+    # Make side-by-side plots of the operons with annotations from our custom
+    # transposon/Cas databases (on top) and the annotations from the re-BLAST
+    # databases (on bottom)
+    local input_directory=$1
+    for group in cas9 cas12 cas13 class1; do
+        output_dir="$input_directory/plots/$group"
+        mkdir -p $output_dir
+        >&2 echo "Plotting operons for $group in $input_directory"
+        python plot_operons.py $input_directory/$group.fully-analyzed $output_dir
+        # if [[ ! -e $output_dir ]]; then
+        #     >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
+        #     fd '.*csv$' $input_directory | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
+        # else
+        #     >&2 echo "Already plotted re-BLASTed operons for $group"
+        # fi
     done
 }
 
@@ -340,15 +350,18 @@ function plot_reblasted_and_original_systems () {
     # Make side-by-side plots of the operons with annotations from our custom
     # transposon/Cas databases (on top) and the annotations from the re-BLAST
     # databases (on bottom)
-
+    local input_directory=$1
     for group in cas9 cas12 cas13 class1; do
-        output_dir="$OUTPUT/plots/$group"
-        if [[ ! -e $output_dir ]]; then
-            >&2 echo "Plotting re-BLASTed operons for $group"
-            fd '.*csv$' $OUTPUT/reblast/$group | parallel -j2 'cat {}' | python plot_reblast.py $OUTPUT/$group.fully-analyzed $output_dir
-        else
-            >&2 echo "Already plotted re-BLASTed operons for $group"
-        fi
+        output_dir="$input_directory/reblasted-plots/$group"
+        mkdir -p $output_dir
+        >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
+        fd '.*csv$' $OUTPUT/reblast | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
+        # if [[ ! -e $output_dir ]]; then
+        #     >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
+        #     fd '.*csv$' $input_directory | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
+        # else
+        #     >&2 echo "Already plotted re-BLASTed operons for $group"
+        # fi
     done
 }
 
@@ -364,6 +377,14 @@ function examine_plausible_candidates () {
     fi
 }
 
+function reblast_interesting_candidates () {
+    local input_directory=$1
+    for group in "${!proteins[@]}"; do
+        filedir=$input_directory/$group.fully-analyzed
+        python reblast_interesting_candidates.py $BLASTN_DB $BLASTP_DB $REBLAST_COUNT $OUTPUT/interesting-candidates.csv $group $filedir $REBLAST_OUTPUT_DIR
+    done
+}    
+
 function run_complete_analysis () {
     # Takes a single input file of some set of candidate systems, and runs the complete analysis for Cas9, Cas12, Cas13 and Class 1 systems.
     local input_systems=$1
@@ -373,21 +394,24 @@ function run_complete_analysis () {
     perform_multiple_sequence_alignment $output_directory
     cluster_nuclease_inactive_systems $output_directory
     find_self_targeting_spacers_and_inverted_repeats $output_directory
+    # plot_operons $output_directory
+    # plot_reblasted_and_original_systems $output_directory
 }
 
-function main () {
-    find_minimal_systems
-    find_minimal_subsystems tn3
-    find_minimal_subsystems composite
+# Run the pipeline
 
-    run_complete_analysis $arrays_required_file $ARRAYS_REQUIRED_DIRECTORY/all
-    run_complete_analysis $OUTPUT/minimal-tn3-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/tn3
-    run_complete_analysis $OUTPUT/minimal-composite-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/composite
+find_minimal_systems
+find_minimal_subsystems tn3
+find_minimal_subsystems composite
 
-    run_complete_analysis $OUTPUT/minimal-tn3.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/tn3
-    run_complete_analysis $OUTPUT/minimal-composite.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/composite
-    exit 43
-    run_complete_analysis $arrays_optional_file $ARRAYS_OPTIONAL_DIRECTORY/all
-}
+run_complete_analysis $arrays_required_file $ARRAYS_REQUIRED_DIRECTORY/all
+run_complete_analysis $OUTPUT/minimal-tn3-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/tn3
+run_complete_analysis $OUTPUT/minimal-composite-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/composite
 
-main
+run_complete_analysis $OUTPUT/minimal-tn3.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/tn3
+run_complete_analysis $OUTPUT/minimal-composite.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/composite
+run_complete_analysis $arrays_optional_file $ARRAYS_OPTIONAL_DIRECTORY/all
+
+echo "reblasting interesting candidates"
+
+reblast_interesting_candidates $ARRAYS_OPTIONAL_DIRECTORY/all
