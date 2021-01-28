@@ -44,6 +44,13 @@ successful = 0
 for operon in operons_to_reblast:
     assert os.path.exists(operon.contig_filename), f"missing file: {operon.contig_filename}"
 
+    # see if this operon has already been re-BLASTed
+    job_id = f"{operon.contig}-{operon.start}-{operon.end}"
+    output_file = os.path.join(output_dir, f"{job_id}_results.csv")
+    if os.path.exists(output_file):
+        print(f"[DONE] Re-BLAST {job_id}", file=sys.stderr)
+        continue
+
     # set up the pipeline
     p = pipeline.Pipeline()
     p.add_seed_with_coordinates_step(start=operon.start,
@@ -60,11 +67,7 @@ for operon in operons_to_reblast:
     p.add_blastn_step(blastn_db_dir, 'tRNA', 1e-30, parse_descriptions=False, num_threads=NUM_THREADS, blastn_path='blastn-2.10')
     # run the pipeline on this one contig
     try:
-        job_id = f"{operon.contig}-{operon.start}-{operon.end}"
-        output_file = os.path.join(output_dir, f"{job_id}_results.csv")
-        if os.path.exists(output_file) or len(os.listdir(output_dir)) >= reblast_count:
-            continue
-        print(output_file, file=sys.stderr)
+        print(f"[RUNNING] Re-BLAST {job_id}", file=sys.stderr)
         results = p.run(data=operon.contig_filename, output_directory=output_dir, job_id=job_id, gzip=True)
     except subprocess.CalledProcessError:
         # pilercr segfaults for some unknown reason, in the event that this
@@ -74,6 +77,3 @@ for operon in operons_to_reblast:
         successful += 1
         if successful == reblast_count:
             break
-
-# signal that we're done with this file
-print(input_file)

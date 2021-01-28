@@ -337,12 +337,6 @@ function plot_operons () {
         mkdir -p $output_dir
         >&2 echo "Plotting operons for $group in $input_directory"
         python plot_operons.py $input_directory/$group.fully-analyzed $output_dir
-        # if [[ ! -e $output_dir ]]; then
-        #     >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
-        #     fd '.*csv$' $input_directory | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
-        # else
-        #     >&2 echo "Already plotted re-BLASTed operons for $group"
-        # fi
     done
 }
 
@@ -355,13 +349,12 @@ function plot_reblasted_and_original_systems () {
         output_dir="$input_directory/reblasted-plots/$group"
         mkdir -p $output_dir
         >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
-        fd '.*csv$' $OUTPUT/reblast | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
-        # if [[ ! -e $output_dir ]]; then
-        #     >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
-        #     fd '.*csv$' $input_directory | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
-        # else
-        #     >&2 echo "Already plotted re-BLASTed operons for $group"
-        # fi
+        if [[ ! -e $output_dir ]]; then
+            >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
+            fd '.*csv$' $input_directory | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
+        else
+            >&2 echo "Already plotted re-BLASTed operons for $group"
+        fi
     done
 }
 
@@ -394,8 +387,8 @@ function run_complete_analysis () {
     perform_multiple_sequence_alignment $output_directory
     cluster_nuclease_inactive_systems $output_directory
     find_self_targeting_spacers_and_inverted_repeats $output_directory
-    # plot_operons $output_directory
-    # plot_reblasted_and_original_systems $output_directory
+    plot_operons $output_directory
+    plot_reblasted_and_original_systems $output_directory
 }
 
 # Run the pipeline
@@ -411,7 +404,5 @@ run_complete_analysis $OUTPUT/minimal-composite-with-arrays.csv.gz $ARRAYS_REQUI
 run_complete_analysis $OUTPUT/minimal-tn3.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/tn3
 run_complete_analysis $OUTPUT/minimal-composite.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/composite
 run_complete_analysis $arrays_optional_file $ARRAYS_OPTIONAL_DIRECTORY/all
-
-echo "reblasting interesting candidates"
 
 reblast_interesting_candidates $ARRAYS_OPTIONAL_DIRECTORY/all
