@@ -29,11 +29,7 @@ for operon in reblasted_operons:
         feature.name = remove_parentheticals.sub("", feature.name)
 
 for original_operon_gz in os.listdir(original_operons_dir):
-    print(original_operon_gz)
     cluster_number = int(cluster_regex.match(original_operon_gz).group(1))
-
-    # cluster_output_dir = os.path.join(output_dir, original_operon_gz)
-    # os.makedirs(cluster_output_dir, exist_ok=True)
 
     with gzip.open(os.path.join(original_operons_dir, original_operon_gz), 'rt') as f:
         original_operons = tuple(analyze.load_operons(f))

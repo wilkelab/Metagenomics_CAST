@@ -9,8 +9,7 @@ from operon_analyzer import analyze, rules
 
 from tools.filters import fs
 
-rs = rules.RuleSet().require('CRISPR array') \
-                    .require('transposase') \
+rs = rules.RuleSet().require('transposase') \
                     .require(r'cas(5|6|7|8|9|10|11|12\w?|13\w?|phi)', regex=True) \
                     .exclude('tns[A-E]', regex=True) \
                     .exclude('tniQ')

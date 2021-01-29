@@ -2,6 +2,7 @@
 
 # This script calculates several numerical values that we report in the text of the paper.
 
+# TODO: this is no longer valid since we've split things up into ±CRISPR arrays, and also all/composite/tn3
 OUTPUT="/stor/home/rybarskj/Metagenomics_CRISPR_transposons/output/nontn7"
 GROUPS="cas9 cas12 cas13 class1"
 # 1. The count of the number of systems we found that meet the basic rules.
