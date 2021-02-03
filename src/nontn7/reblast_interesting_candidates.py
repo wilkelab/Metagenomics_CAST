@@ -26,26 +26,19 @@ with open(interesting_candidate_filename) as f:
         protein, cluster_number = line.strip().split()
         cluster_filenames[protein].append(f"cluster{cluster_number}.csv.gz")
 
-
 for filename in os.listdir(input_directory):
     if filename not in cluster_filenames[protein_of_interest]:
         continue
-    operons = load.load_gzipped_operons(os.path.join(input_directory, filename))
-    good_operons = []
+    operons = tuple(load.load_gzipped_operons(os.path.join(input_directory, filename)))
 
-    # Only look at systems with inverted repeats, since all the interesting systems had them
-    for operon in operons:
-        if not any([name.startswith("IR #") for name in operon.feature_names]):
-            continue
-        good_operons.append(operon)
-
-    operons_to_reblast = random.sample(good_operons, min(len(good_operons), reblast_count))
-    for operon in operons_to_reblast:
+    good_operons = random.sample(operons, min(len(operons), reblast_count))
+    for operon in good_operons:
         job_id = f"{operon.contig}-{operon.start}-{operon.end}"
         output_file = os.path.join(output_directory, f"{job_id}_results.csv")
         if os.path.exists(output_file):
-            print(f"[DONE] Re-BLAST {job_id}", file=sys.stderr)
+            print(f"[DONE] Re-BLAST {protein_of_interest} {filename} {job_id}", file=sys.stderr)
         else:
+            print(f"[RUNNING] Re-BLAST {protein_of_interest} {filename} {job_id}", file=sys.stderr)
             p = pipeline.Pipeline()
             p.add_seed_with_coordinates_step(start=operon.start,
                                              end=operon.end,
@@ -61,11 +54,8 @@ for filename in os.listdir(input_directory):
             p.add_blastn_step(blastn_db_dir, 'tRNA', 1e-30, parse_descriptions=False, num_threads=NUM_THREADS, blastn_path='blastn-2.10')
             # run the pipeline on this one contig
             try:
-                print(f"[RUNNING] Re-BLAST {job_id}", file=sys.stderr)
                 results = p.run(data=operon.contig_filename, output_directory=output_directory, job_id=job_id, gzip=True)
             except subprocess.CalledProcessError:
                 # pilercr segfaults for some unknown reason, in the event that this
                 # happens we'll just skip this operon
                 continue
-
-

@@ -14,12 +14,10 @@ REBLAST_OUTPUT_DIR="$OUTPUT/reblast"
 ARRAYS_OPTIONAL_DIRECTORY=$OUTPUT/systems-with-or-without-crispr-arrays
 ARRAYS_REQUIRED_DIRECTORY=$OUTPUT/systems-with-crispr-arrays
 
-MIN_REBLAST_CLUSTER_SIZE=2
-REBLAST_COUNT=3
+MIN_REBLAST_CLUSTER_SIZE=1
+REBLAST_COUNT=5
 KEEP_PATHS="NO"  # change to "YES" if you're running this pipeline on some other system than the Wilke cluster. You will need to update the values for $STORE and $INPUT, and probably most of the hard-coded values listed above.
 
-# TODO: This looks ridiculous because we removed the weird corner cases it allowed us to use.
-# It can be replaced by a simple list of strings probably.
 declare -A proteins
 proteins[cas9]="cas9"
 proteins[cas12]="cas12"
@@ -320,8 +318,6 @@ function reblast () {
     for group in "${!proteins[@]}"; do
         filedir=$input_directory/$group.fully-analyzed
         for filename in $(ls $filedir); do
-            # Perform the re-BLASTing. If we skip the file because it has too few clusters, we print nothing so that we can lower the minimum cluster size later. If we do print the filename it indicates that we BLASTed as many operons as we wanted.
-            # reblast.py needs to go through the operons in $filedir/$filename, determine the output filename for each, and check if they're present in $REBLAST_OUTPUT_DIR. If not, reblast. Either way, print out the decision. 
             python reblast.py $BLASTN_DB $BLASTP_DB $MIN_REBLAST_CLUSTER_SIZE $REBLAST_COUNT $REBLAST_OUTPUT_DIR $filedir/$filename
         done
     done
@@ -347,11 +343,11 @@ function plot_reblasted_and_original_systems () {
     local input_directory=$1
     for group in cas9 cas12 cas13 class1; do
         output_dir="$input_directory/reblasted-plots/$group"
-        mkdir -p $output_dir
         >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
         if [[ ! -e $output_dir ]]; then
+            mkdir -p $output_dir
             >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
-            fd '.*csv$' $input_directory | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
+            fd '.*csv$' $OUTPUT/reblast | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
         else
             >&2 echo "Already plotted re-BLASTed operons for $group"
         fi
@@ -372,7 +368,7 @@ function examine_plausible_candidates () {
 
 function reblast_interesting_candidates () {
     local input_directory=$1
-    for group in "${!proteins[@]}"; do
+    for group in cas12 cas9 cas13 class1; do
         filedir=$input_directory/$group.fully-analyzed
         python reblast_interesting_candidates.py $BLASTN_DB $BLASTP_DB $REBLAST_COUNT $OUTPUT/interesting-candidates.csv $group $filedir $REBLAST_OUTPUT_DIR
     done
@@ -388,7 +384,6 @@ function run_complete_analysis () {
     cluster_nuclease_inactive_systems $output_directory
     find_self_targeting_spacers_and_inverted_repeats $output_directory
     plot_operons $output_directory
-    plot_reblasted_and_original_systems $output_directory
 }
 
 # Run the pipeline
@@ -397,12 +392,16 @@ find_minimal_systems
 find_minimal_subsystems tn3
 find_minimal_subsystems composite
 
+# Perform analysis on systems with CRISPR arrays
 run_complete_analysis $arrays_required_file $ARRAYS_REQUIRED_DIRECTORY/all
 run_complete_analysis $OUTPUT/minimal-tn3-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/tn3
 run_complete_analysis $OUTPUT/minimal-composite-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/composite
 
+# Perform analysis on systems that may or may not have CRISPR arrays
 run_complete_analysis $OUTPUT/minimal-tn3.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/tn3
 run_complete_analysis $OUTPUT/minimal-composite.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/composite
 run_complete_analysis $arrays_optional_file $ARRAYS_OPTIONAL_DIRECTORY/all
 
+# Reblast interesting systems
 reblast_interesting_candidates $ARRAYS_OPTIONAL_DIRECTORY/all
+plot_reblasted_and_original_systems $ARRAYS_OPTIONAL_DIRECTORY/all
