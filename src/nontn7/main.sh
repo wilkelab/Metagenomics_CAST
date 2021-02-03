@@ -15,11 +15,9 @@ ARRAYS_OPTIONAL_DIRECTORY=$OUTPUT/systems-with-or-without-crispr-arrays
 ARRAYS_REQUIRED_DIRECTORY=$OUTPUT/systems-with-crispr-arrays
 
 MIN_REBLAST_CLUSTER_SIZE=1
-REBLAST_COUNT=3
+REBLAST_COUNT=5
 KEEP_PATHS="NO"  # change to "YES" if you're running this pipeline on some other system than the Wilke cluster. You will need to update the values for $STORE and $INPUT, and probably most of the hard-coded values listed above.
 
-# TODO: This looks ridiculous because we removed the weird corner cases it allowed us to use.
-# It can be replaced by a simple list of strings probably.
 declare -A proteins
 proteins[cas9]="cas9"
 proteins[cas12]="cas12"
@@ -394,13 +392,16 @@ find_minimal_systems
 find_minimal_subsystems tn3
 find_minimal_subsystems composite
 
-# run_complete_analysis $arrays_required_file $ARRAYS_REQUIRED_DIRECTORY/all
-# run_complete_analysis $OUTPUT/minimal-tn3-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/tn3
-# run_complete_analysis $OUTPUT/minimal-composite-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/composite
+# Perform analysis on systems with CRISPR arrays
+run_complete_analysis $arrays_required_file $ARRAYS_REQUIRED_DIRECTORY/all
+run_complete_analysis $OUTPUT/minimal-tn3-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/tn3
+run_complete_analysis $OUTPUT/minimal-composite-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/composite
 
-# run_complete_analysis $OUTPUT/minimal-tn3.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/tn3
-# run_complete_analysis $OUTPUT/minimal-composite.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/composite
-# run_complete_analysis $arrays_optional_file $ARRAYS_OPTIONAL_DIRECTORY/all
+# Perform analysis on systems that may or may not have CRISPR arrays
+run_complete_analysis $OUTPUT/minimal-tn3.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/tn3
+run_complete_analysis $OUTPUT/minimal-composite.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/composite
+run_complete_analysis $arrays_optional_file $ARRAYS_OPTIONAL_DIRECTORY/all
 
+# Reblast interesting systems
 reblast_interesting_candidates $ARRAYS_OPTIONAL_DIRECTORY/all
 plot_reblasted_and_original_systems $ARRAYS_OPTIONAL_DIRECTORY/all

@@ -29,16 +29,16 @@ with open(interesting_candidate_filename) as f:
 for filename in os.listdir(input_directory):
     if filename not in cluster_filenames[protein_of_interest]:
         continue
-    operons = load.load_gzipped_operons(os.path.join(input_directory, filename))
-    good_operons = []
+    operons = tuple(load.load_gzipped_operons(os.path.join(input_directory, filename)))
+    # good_operons = []
 
     # Only look at systems with inverted repeats, since all the interesting systems had them
-    for operon in operons:
-        if not any([name.startswith("IR #") for name in operon.feature_names]):
-            continue
-        good_operons.append(operon)
+    # for operon in operons:
+    #     if not any([name.startswith("IR #") for name in operon.feature_names]):
+    #         continue
+    #     good_operons.append(operon)
 
-    good_operons = random.sample(good_operons, min(len(good_operons), reblast_count))
+    good_operons = random.sample(operons, min(len(operons), reblast_count))
     for operon in good_operons:
         job_id = f"{operon.contig}-{operon.start}-{operon.end}"
         output_file = os.path.join(output_directory, f"{job_id}_results.csv")
