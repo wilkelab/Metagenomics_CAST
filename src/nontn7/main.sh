@@ -330,8 +330,13 @@ function plot_operons () {
     local input_directory=$1
     for group in cas9 cas12 cas13 class1; do
         output_dir="$input_directory/plots/$group"
+        local action="Plot operons for $group in $input_directory"
+        if [[ -e $output_dir ]]; then
+            echodone $action
+            continue
+        fi
         mkdir -p $output_dir
-        >&2 echo "Plotting operons for $group in $input_directory"
+        echodo $action
         python plot_operons.py $input_directory/$group.fully-analyzed $output_dir
     done
 }
@@ -343,13 +348,13 @@ function plot_reblasted_and_original_systems () {
     local input_directory=$1
     for group in cas9 cas12 cas13 class1; do
         output_dir="$input_directory/reblasted-plots/$group"
-        >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
+        local action="Plot re-BLASTed operons for $group in $input_directory"
         if [[ ! -e $output_dir ]]; then
             mkdir -p $output_dir
-            >&2 echo "Plotting re-BLASTed operons for $group in $input_directory"
+            echodo $action
             fd '.*csv$' $OUTPUT/reblast | parallel -j2 'cat {}' | python plot_reblast.py $input_directory/$group.fully-analyzed $output_dir
         else
-            >&2 echo "Already plotted re-BLASTed operons for $group"
+            echodone $action
         fi
     done
 }
