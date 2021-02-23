@@ -21,6 +21,8 @@ with open(interesting_file) as f:
     for line in f:
         directory, cluster_number = line.strip().split()
         prefix = f"{directory}/cluster{cluster_number:>03}-"
+        output_group_dir = os.path.join(output_dir, directory)
+        os.makedirs(output_group_dir, exist_ok=True)
         for png in pngs:
             if prefix in png:
-                shutil.copy(png, os.path.join(output_dir, directory))
+                shutil.copy(png, output_group_dir)
