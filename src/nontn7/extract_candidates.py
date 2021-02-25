@@ -11,14 +11,25 @@ candidate_list = sys.argv[1]
 
 
 with open(candidate_list) as f:
-    candidates = set()
+    candidates = []
     for line in f:
-        accession, coords = line.strip().split(',')
-        coords = coords.split("..")
-        start, end = int(coords[0]), int(coords[1])
-        candidates.add((accession, start, end))
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        _, accession, start, end = line.split('-')
+        start, end = int(start), int(end)
+        candidates.append((accession, start, end))
 
 
-for operon in load.load_operons(sys.stdin):
-    if (operon.contig, operon.start, operon.end) in candidates:
-        print(operon.as_str())
+found = 0
+operons = tuple(load.load_operons(sys.stdin))
+for accession, start, end in candidates:
+    for operon in operons:
+        if (operon.contig, operon.start, operon.end) == (accession, start, end):
+            found += 1
+            print(operon.as_str())
+            print("\n\n")
+            break
+
+if found != len(candidates):
+    raise ValueError("Not all specified candidate systems were found!")
