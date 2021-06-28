@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# This script runs the entire non-Tn7 CRISPR-transposon pipeline.
-
+# This script runs the entire non-Tn7 CAST pipeline.
 
 set -euo pipefail  # Halt the pipeline if any errors are encountered
 
@@ -394,19 +393,16 @@ function run_complete_analysis () {
 # Run the pipeline
 
 find_minimal_systems
-find_minimal_subsystems tn3
-find_minimal_subsystems composite
 
 # Perform analysis on systems with CRISPR arrays
 run_complete_analysis $arrays_required_file $ARRAYS_REQUIRED_DIRECTORY/all
-run_complete_analysis $OUTPUT/minimal-tn3-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/tn3
-run_complete_analysis $OUTPUT/minimal-composite-with-arrays.csv.gz $ARRAYS_REQUIRED_DIRECTORY/composite
 
 # Perform analysis on systems that may or may not have CRISPR arrays
-run_complete_analysis $OUTPUT/minimal-tn3.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/tn3
-run_complete_analysis $OUTPUT/minimal-composite.csv.gz $ARRAYS_OPTIONAL_DIRECTORY/composite
 run_complete_analysis $arrays_optional_file $ARRAYS_OPTIONAL_DIRECTORY/all
 
 # Reblast interesting systems
 reblast_interesting_candidates $ARRAYS_OPTIONAL_DIRECTORY/all
 plot_reblasted_and_original_systems $ARRAYS_OPTIONAL_DIRECTORY/all
+
+# Separate potential Rpn-Cas12k CAST systems 
+gzip -cd $OUTPUT/systems-with-or-without-crispr-arrays/all/cas12.nuclease_dead.csv.gz | python rules-rpn.py | gzip > $OUTPUT/systems-with-or-without-crispr-arrays/all/cas12-rpn.csv.gz
