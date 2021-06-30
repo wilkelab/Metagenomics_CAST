@@ -1,9 +1,13 @@
-# Writes the sequences for the direct repeat, target and PAM for each self-target in the Type V systems
-# This produces a flat text file that will later be parsed to determine the sequence logo for the PAM
-# in Figure 5. We do this so we can account for situations where the pairwise alignment was off by a
-# base or more. This is a reasonable assumption when the repeat ends in GAAAG, which has both experimental
-# and bioinformatic evidence to support it as the true end of the repeat. For other repeat sequences, we
-# suspect they are misidentified self-targets, and in reality those systems do not target the genome.
+# Writes the sequences for the PAM for each self-target in the Type V systems.
+# This produces a flat text file that will be used to generate a sequence logo for the PAM
+# in Figure 5. There are some cases where the pairwise alignment seems to have made an
+# off-by-one error - in these cases, we adjust the alignment by one base pair. This is a
+# reasonable assumption given that there is both bioinformatic and experimental evidence
+# that the atypical repeat always ends in "GAAAG".
+# We split the output into two groups - those systems with canonical atypical repeats,
+# and all others. We believe the latter group is the result of spurious alignments from
+# systems that don't actually have self-targeting spacers (or are using them in trans).
+
 
 import sys
 
