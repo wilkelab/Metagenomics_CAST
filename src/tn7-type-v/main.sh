@@ -13,6 +13,7 @@ KEEP_PATHS="NO"
 mkdir -p $OUTPUT $OUTPUT/plots $OUTPUT/reblast
 
 if [[ ! -e $OUTPUT/cas12k.csv.gz ]]; then
+    >&2 echo "Running systems through Cas12k rules"
     for filename in $INPUT; do
         # stream tar files to stdout
         tar -xzOf $filename
@@ -20,24 +21,29 @@ if [[ ! -e $OUTPUT/cas12k.csv.gz ]]; then
 fi
 
 if [[ ! -e $OUTPUT/cas12k-tns.csv.gz ]]; then
+    >&2 echo "Running systems through Tn7 rules"
     gzip -cd $OUTPUT/cas12k.csv.gz | python rules-tn7.py | python dedup.py | gzip > $OUTPUT/cas12k-tns.csv.gz
 fi
 
 if [[ ! -e $OUTPUT/cas12k-tns-minced.csv.gz ]]; then
+    >&2 echo "Finding CRISPR arrays"
     gzip -cd $OUTPUT/cas12k-tns.csv.gz | python minced.py | gzip > $OUTPUT/cas12k-tns-minced.csv.gz
 fi
 
 if [[ ! -e $OUTPUT/cas12k-tns-minced-array.csv.gz ]]; then
+    >&2 echo "Filtering systems without arrays"
     gzip -cd $OUTPUT/cas12k-tns-minced.csv.gz | python rules-array.py | gzip > $OUTPUT/cas12k-tns-minced-array.csv.gz 
 fi
 
 if [[ ! -e $OUTPUT/unique-filenames.csv ]]; then
+    >&2 echo "Getting unique filenames"
     gzip -cd $OUTPUT/cas12k-tns-minced-array.csv.gz | python extract-filenames.py | sort -u > $OUTPUT/unique-filenames.csv
 fi
 
 mkdir -p $OUTPUT/reblast
 
 if [[ "$(ls $OUTPUT/reblast | wc -l)" -eq "0" ]]; then
+    >&2 echo "Re-BLASTing systems"
     cat $OUTPUT/unique-filenames.csv | parallel -j 96 "python relook.py {} $OUTPUT/reblast"
 fi
 
@@ -80,9 +86,16 @@ fi
 # Perform alignments for Figure 5
 
 if [[ ! -e $OUTPUT/fig5d.afa ]]; then
+    >&2 echo "Fig 5D alignments"
     mafft --auto $DATA/fig-5d-tnsc.fa > $OUTPUT/fig5d.afa
 fi
 
 if [[ ! -e $OUTPUT/fig5e.afa ]]; then
+    >&2 echo "Fig 5E alignments"
     mafft --auto $DATA/fig-5e-tnsb.fa > $OUTPUT/fig5e.afa
+fi
+
+if [[ ! -e $OUTPUT/canonical-pams.csv ]]; then
+    >&2 echo "Getting sequences of self-targeting PAMs"
+    gzip -cd $OUTPUT/reblasted-cas12k-with-sts-rules-deduped.csv.gz | python get-pams.py > $OUTPUT/canonical-pams.csv 2> $OUTPUT/other-pams.csv
 fi
