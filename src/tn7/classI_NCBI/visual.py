@@ -20,4 +20,4 @@ for x in good_operons:
     try:
         plot_operons([x], image_directory)
     except:
-        print('wtf')
+        pass
