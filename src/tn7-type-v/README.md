@@ -1,0 +1,24 @@
+# Type V Tn7 CASTs
+
+  - `count_operons.py` Counts the number of systems
+  - `count_sources.py` Counts how many systems came from NCBI, EMBL or another source
+  - `custom_rules.py` Rules for finding Tn7-like CASTs
+  - `dedup.py` Deduplicates systems
+  - `extract-filenames.py` Gets the nucleotide sequence filenames for each system. Part of an speed optimization
+  - `fix_paths.py` Changes the path for raw sequence files from those used on TACC to the ones used locally
+  - `get-pams.py` Gets the PAM sequences for self-targeting systems 
+  - `main.sh` Runs the entire pipeline 
+  - `make-fastas-for-phylogenetic-tree.py` Gets sequences needed for a phylogenetic analysis
+  - `make-self-target-fasta.py` Generates a FASTA file of the region around all self-targets 
+  - `minced.py` Runs the minCED CRISPR array finder
+  - `plot_architectures.py` Plot all systems, clustered by their gene architecture
+  - `plot_operons.py` Plot gene diagrams of given systems.  
+  - `relook.py` Redo the `gene_finder` step, using cas12k as the seed. This allows us to find systems with multiple distant CASTs in the same contig
+  - `rules-array.py` Filters out systems without CRISPR arrays
+  - `rules-cas12k.py` Filters out systems without cas12k 
+  - `rules-tn7.py` Filters out systems without certain Tn7 genes
+  - `scan.py` Tools for finding direct/inverted repeats
+  - `sts.py` Finds self-targeting spacers
+  - `tools`
+    - `colors.py` Contains the color palette for system diagrams
+    - `filters.py` Contains a universal filte
