@@ -41,6 +41,7 @@ Tests can be run with `python -m pytest` in this directory.
   - `count_systems.py` Counts the number of unique putative systems in a CSV 
   - `dedup.py` Deduplicates systems  
   - `extract_candidates.py` Serializes manually-selected candidate systems
+  - `find-cas12-sts.py` Looks for Cas12-containing systems and tries to identify their self-targeting spacers, if any exist
   - `find_inverted_repeats.py` Finds inverted repeats in contigs that contain putative systems
   - `find_nuclease_dead_clusters.py` Determine which Class 2 systems have inactivated catalytic residues
   - `fix-paths.py` Updates paths to those on our local cluster  
@@ -61,10 +62,10 @@ Tests can be run with `python -m pytest` in this directory.
   - `rules-minimal.py` Selects systems with one transposase, one cas gene, and no Tn7 genes
   - `rules-nocas1-2.py` Filters out systems with cas1 and/or cas2  
   - `rules-nocas3-10.py` Filters out systems with cas3 and/or cas10  
-  - `rules-rpn.py` Filters systems with Rpn-family transposase/recombinases
   - `self_targeting.py` Finds systems with CRISPR arrays that target a location in its contig  
+  - `simple-reblast.py` Re-BLASTs systems with given nucleotide and protein databases
   - `size_select.py` Filters systems by the size of a given protein  
   - `validate-plausible-candidates.py` Prints detailed information about a manually-curated list of putative systems  
   - `tools/`  
     `colors.py` Contains the color palette for system diagrams  
-    `filters.py` Contains a universal filter  
+    `filters.py` Contains a universal filter 
