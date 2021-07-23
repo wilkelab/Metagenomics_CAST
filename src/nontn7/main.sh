@@ -404,5 +404,10 @@ run_complete_analysis $arrays_optional_file $ARRAYS_OPTIONAL_DIRECTORY/all
 reblast_interesting_candidates $ARRAYS_OPTIONAL_DIRECTORY/all
 plot_reblasted_and_original_systems $ARRAYS_OPTIONAL_DIRECTORY/all
 
-# Separate potential Rpn-Cas12k CAST systems 
-gzip -cd $OUTPUT/systems-with-or-without-crispr-arrays/all/cas12.nuclease_dead.csv.gz | python rules-rpn.py | gzip > $OUTPUT/systems-with-or-without-crispr-arrays/all/cas12-rpn.csv.gz
+# Isolate Cas12-Rpn systems
+# These were identified by manual inspection as meriting further analysis
+for cluster in 24 50 122 154 do;
+    gzip -cd $ARRAYS_OPTIONAL_DIRECTORY/all/cas12.fully-analyzed/cluster$cluster.csv.gz 
+done | python simple-reblast.py $BLASTN_DB $BLASTP_DB $ARRAYS_OPTIONAL_DIRECTORY/all/cas12.fully-analyzed/reblast
+
+cat $ARRAYS_OPTIONAL_DIRECTORY/all/cas12.fully-analyzed/reblast/*csv | python minced.py | python find-cas12-sts.py > $OUTPUT/cas12-rpn-candidates.csv
