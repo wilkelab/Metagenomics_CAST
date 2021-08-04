@@ -1,4 +1,4 @@
-# Metagenomic discovery of CRISPR-Transposons
+# Metagenomic Discovery of CRISPR-Associated Transposons
 
 James R. Rybarski, Kuang Hu, Alexis Hill, Claus O. Wilke, Ilya J. Finkelstein
 
