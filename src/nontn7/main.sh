@@ -374,7 +374,7 @@ function reblast_interesting_candidates () {
     local input_directory=$1
     for group in cas12 cas9 cas13 class1; do
         filedir=$input_directory/$group.fully-analyzed
-        python reblast_interesting_candidates.py $BLASTN_DB $BLASTP_DB $REBLAST_COUNT $OUTPUT/interesting-candidates.csv $group $filedir $REBLAST_OUTPUT_DIR
+        python reblast_interesting_candidates.py $BLASTN_DB $BLASTP_DB $REBLAST_COUNT $OUTPUT/interesting-candidates.txt $group $filedir $REBLAST_OUTPUT_DIR
     done
 }    
 
