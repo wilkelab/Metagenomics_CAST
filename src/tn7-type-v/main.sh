@@ -35,16 +35,16 @@ if [[ ! -e $OUTPUT/cas12k-tns-minced-array.csv.gz ]]; then
     gzip -cd $OUTPUT/cas12k-tns-minced.csv.gz | python rules-array.py | gzip > $OUTPUT/cas12k-tns-minced-array.csv.gz 
 fi
 
-if [[ ! -e $OUTPUT/unique-filenames.csv ]]; then
+if [[ ! -e $OUTPUT/unique-filenames.txt ]]; then
     >&2 echo "Getting unique filenames"
-    gzip -cd $OUTPUT/cas12k-tns-minced-array.csv.gz | python extract-filenames.py | sort -u > $OUTPUT/unique-filenames.csv
+    gzip -cd $OUTPUT/cas12k-tns-minced-array.csv.gz | python extract-filenames.py | sort -u > $OUTPUT/unique-filenames.txt
 fi
 
 mkdir -p $OUTPUT/reblast
 
 if [[ "$(ls $OUTPUT/reblast | wc -l)" -eq "0" ]]; then
     >&2 echo "Re-BLASTing systems"
-    cat $OUTPUT/unique-filenames.csv | parallel -j 96 "python relook.py {} $OUTPUT/reblast"
+    cat $OUTPUT/unique-filenames.txt | parallel -j 96 "python relook.py {} $OUTPUT/reblast"
 fi
 
 mkdir -p $OUTPUT/reblast-minced
@@ -73,14 +73,14 @@ if [[ ! -e $OUTPUT/self-target-context-seqs.fa ]]; then
     gzip -cd  $OUTPUT/reblasted-cas12k-with-sts.csv.gz | python make-self-target-fasta.py > $OUTPUT/self-target-context-seqs.fa
 fi
 
-if [[ ! -e $OUTPUT/self-target-blastn-nt.csv ]]; then
+if [[ ! -e $OUTPUT/self-target-blastn-nt.tsv ]]; then
     >&2 echo "blastn att sites"
-    blastn-2.10 -db ~/work/nt/nt -query $OUTPUT/self-target-context-seqs.fa -evalue 1e-8 -outfmt '6 qseqid sseqid evalue qseq sseq pident stitle' -num_threads 16 -max_target_seqs 100 | rg -v 'genome' | rg -v 'chromosome' | rg -v 'complete sequence' | rg -v 'genomic( DNA)? sequence' > $OUTPUT/self-target-blastn-nt.csv
+    blastn-2.10 -db ~/work/nt/nt -query $OUTPUT/self-target-context-seqs.fa -evalue 1e-8 -outfmt '6 qseqid sseqid evalue qseq sseq pident stitle' -num_threads 16 -max_target_seqs 100 | rg -v 'genome' | rg -v 'chromosome' | rg -v 'complete sequence' | rg -v 'genomic( DNA)? sequence' > $OUTPUT/self-target-blastn-nt.tsv
 fi
 
-if [[ ! -e $OUTPUT/self-target-blastx-nr.csv ]]; then
+if [[ ! -e $OUTPUT/self-target-blastx-nr.tsv ]]; then
     >&2 echo "blasttx att sites"
-    blastx-2.10 -db ~/work/nrdb/nr -query $OUTPUT/self-target-context-seqs.fa -evalue 1e-8 -outfmt '6 qseqid sseqid evalue qseq sseq pident stitle' -num_threads 16 -max_target_seqs 100 | rg -v 'genome' | rg -v 'chromosome' | rg -v 'complete sequence' | rg -v 'genomic( DNA)? sequence' > $OUTPUT/self-target-blastx-nr.csv
+    blastx-2.10 -db ~/work/nrdb/nr -query $OUTPUT/self-target-context-seqs.fa -evalue 1e-8 -outfmt '6 qseqid sseqid evalue qseq sseq pident stitle' -num_threads 16 -max_target_seqs 100 | rg -v 'genome' | rg -v 'chromosome' | rg -v 'complete sequence' | rg -v 'genomic( DNA)? sequence' > $OUTPUT/self-target-blastx-nr.tsv
 fi
 
 # Perform alignments for Figure 5
@@ -95,7 +95,7 @@ if [[ ! -e $OUTPUT/fig5e.afa ]]; then
     mafft --auto $DATA/fig-5e-tnsb.fa > $OUTPUT/fig5e.afa
 fi
 
-if [[ ! -e $OUTPUT/canonical-pams.csv ]]; then
+if [[ ! -e $OUTPUT/canonical-pams.txt ]]; then
     >&2 echo "Getting sequences of self-targeting PAMs"
-    gzip -cd $OUTPUT/reblasted-cas12k-with-sts-rules-deduped.csv.gz | python get-pams.py > $OUTPUT/canonical-pams.csv 2> $OUTPUT/other-pams.csv
+    gzip -cd $OUTPUT/reblasted-cas12k-with-sts-rules-deduped.csv.gz | python get-pams.py > $OUTPUT/canonical-pams.txt 2> $OUTPUT/other-pams.txt
 fi
