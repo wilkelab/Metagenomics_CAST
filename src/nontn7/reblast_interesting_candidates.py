@@ -23,7 +23,9 @@ NUM_THREADS = 64
 cluster_filenames = defaultdict(list)
 with open(interesting_candidate_filename) as f:
     for line in f:
-        protein, cluster_number = line.strip().split()
+        if line.startswith("#"):
+            continue
+        protein, cluster_number = line.strip().split(",")
         cluster_filenames[protein].append(f"cluster{cluster_number}.csv.gz")
 
 for filename in os.listdir(input_directory):
