@@ -8,3 +8,16 @@
   - `self-target-blastx-nr.tsv` Results of running blastp with the NCBI nr database on target sequences.
   - `self-target-context-seqs.fa` DNA sequences 50 bp up/downstream of each target.
   - `unique-filenames.txt` Paths to raw sequence files for each CAST.
+
+### TSV formats
+
+`self-target-blastn-nt.tsv` and `self-target-blastx-nr.tsv` are created by `blastn-2.10` and `blastx-2.10`, respectively, with the `outfmt` parameter set to `6 qseqid sseqid evalue qseq sseq pident stitle`. These values mean:
+
+| value | meaning |
+| ----- | ------- | 
+| qseqid | `<contig accession>_<contig_start>..<contig end>_<gene start>..<gene_end>` |
+| sseqid | accession of nearest BLAST result |
+| qseq | aligned part of query sequence |
+| sseq | aligned part of BLAST result sequence |
+| pident | percentage of identical matches |
+| stitle | title of BLAST hit | 
