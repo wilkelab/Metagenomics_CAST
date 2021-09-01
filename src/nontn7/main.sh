@@ -415,4 +415,5 @@ cat $ARRAYS_OPTIONAL_DIRECTORY/all/cas12.fully-analyzed/reblast/*csv | python mi
 # Make FASTA files of just Rpn-associated Cas12 proteins
 cat $DATA/cas12.fasta $DATA/lbcas12a.fasta $DATA/fncas12a.fasta > $OUTPUT/cas12.fasta
 python make_effector_fasta.py Cpf1 < $OUTPUT/cas12-rpn-candidates.csv | seqkit rmdup -s >> $OUTPUT/cas12.fasta
-mafft --auto $OUTPUT/cas12.fasta > $OUTPUT/cas12.afa
+mafft --localpair --maxiterate 1000 $OUTPUT/cas12.fasta > $OUTPUT/cas12.afa
+
