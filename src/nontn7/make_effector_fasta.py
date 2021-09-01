@@ -10,7 +10,7 @@ from tools.filters import fs
 
 
 def get_lowest_evalue_protein(operon: genes.Operon, protein_name: str) -> Optional[genes.Feature]:
-    proteins = sorted([feature for feature in operon.get(protein_name)], key=lambda x: x.e_val)
+    proteins = sorted([feature for feature in operon.get(protein_name, regex=True)], key=lambda x: x.e_val)
     if proteins:
         return proteins[0]
     return None
