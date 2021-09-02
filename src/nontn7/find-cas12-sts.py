@@ -1,4 +1,4 @@
-# do a pairwise search between the source (defined above) and 25kb upstream of cas12a and 25kb downstream of the array
+# do a pairwise search between the source (defined above) and 25kb upstream of cas12 and 25kb downstream of the array
 # create Features of top hits and source
 
 
