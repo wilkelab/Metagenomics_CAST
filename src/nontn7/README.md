@@ -12,6 +12,7 @@ A pipeline for discovering non-Tn7 CASTs.
   - `NCBI Blast 2.10+` [https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download)  
   - `ripgrep` [https://github.com/BurntSushi/ripgrep](https://github.com/BurntSushi/ripgrep)  
   - `fd` [https://github.com/sharkdp/fd](https://github.com/sharkdp/fd)  
+  - `seqkit 0.14.0` [https://bioinf.shenwei.me/seqkit/](https://bioinf.shenwei.me/seqkit/)
 
 ### Data Dependencies
 

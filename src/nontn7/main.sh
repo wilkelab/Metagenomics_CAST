@@ -411,3 +411,13 @@ for cluster in 24 50 122 154 do;
 done | python simple-reblast.py $BLASTN_DB $BLASTP_DB $ARRAYS_OPTIONAL_DIRECTORY/all/cas12.fully-analyzed/reblast
 
 cat $ARRAYS_OPTIONAL_DIRECTORY/all/cas12.fully-analyzed/reblast/*csv | python minced.py | python find-cas12-sts.py > $OUTPUT/cas12-rpn-candidates.csv
+
+# Assemble canonical nuclease-active Cas12a proteins to align them with the Rpn-associated ones
+if [[ ! -e $OUTPUT/cas12.afa ]]; then
+    cat $DATA/cas12.fasta $DATA/lbcas12a.fasta $DATA/fncas12a.fasta $DATA/more-cas12a.fasta > $OUTPUT/cas12.fasta
+
+    # Add the Rpn-associated Cas12 proteins
+    # We eliminate the "ORPV" operon since it's a really tiny contig and not an Rpn-associated system
+    python make_effector_fasta.py Cpf1 < $OUTPUT/cas12-rpn-candidates.csv | seqkit rmdup -s | rg -v ORPV >> $OUTPUT/cas12.fasta
+    mafft --localpair --maxiterate 10000 $OUTPUT/cas12.fasta > $OUTPUT/cas12.afa
+fi
